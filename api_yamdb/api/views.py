@@ -5,13 +5,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from http.client import OK, BAD_REQUEST
-from api.serializers import SignUpSerializer, TokenSerializer, UserSerializer
-from api.permissions import IsAdmin
-from reviews.models import User
+from api.serializers import (SignUpSerializer, TokenSerializer, UserSerializer, 
+                            CategorySerializer, GenreSerializer, TitleSerializer)
+from api.permissions import IsAdmin, IsAdminOrReadOnly
+from reviews.models import User, Category, Genre, Title
 
 
 class HTTPMethod:
@@ -83,3 +85,21 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(role='user')
         return Response(serializer.data, status=OK)
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly, ]
+
+
+class GenreViewSet(ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = [IsAdminOrReadOnly, ]
+
+
+class TitleViewSet(ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = [IsAdminOrReadOnly, ]

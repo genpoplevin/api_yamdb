@@ -65,3 +65,52 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Category(models.Model):
+    name = models.CharField(
+        'название',
+        max_length=256
+    )
+    slug = models.SlugField(
+        'slug',
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Genre(models.Model):
+    name = models.CharField(
+        'название',
+        max_length=50,
+    )
+    slug = models.SlugField(
+        'slug',
+        unique=True,
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Title(models.Model):
+    name = models.CharField(
+        'название',
+        max_length=200,
+    )
+    year = models.IntegerField(
+        'год',
+        blank=True,
+    )
+    category = models.ForeignKey(
+        Category,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='titles',
+    )
+
+    def __str__(self):
+        return self.name
