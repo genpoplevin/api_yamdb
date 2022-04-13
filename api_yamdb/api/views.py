@@ -1,5 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework import viewsets, filters, permissions
+from rest_framework import viewsets, filters, permissions, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
@@ -87,19 +87,36 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=OK)
 
 
-class CategoryViewSet(ModelViewSet):
+class ListCreateDestroyMixin(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
+
+
+class CategoryViewSet(ListCreateDestroyMixin):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly, ]
+    filter_backends = [filters.SearchFilter, ]
+    search_fields = ['name', ]
+    lookup_field = 'slug'
+    pagination_class = PageNumberPagination
 
 
-class GenreViewSet(ModelViewSet):
+class GenreViewSet(ListCreateDestroyMixin):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = [IsAdminOrReadOnly, ]
+    filter_backends = [filters.SearchFilter, ]
+    search_fields = ['name', ]
+    lookup_field = 'slug'
+    pagination_class = PageNumberPagination
 
 
-class TitleViewSet(ModelViewSet):
+class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = [IsAdminOrReadOnly, ]

@@ -70,12 +70,17 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(
         'название',
-        max_length=256
+        max_length=256,
+        default=None
     )
     slug = models.SlugField(
         'slug',
+        max_length=50,
         unique=True
     )
+
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
         return self.name
@@ -84,12 +89,17 @@ class Category(models.Model):
 class Genre(models.Model):
     name = models.CharField(
         'название',
-        max_length=50,
+        max_length=100,
+        default=None
     )
     slug = models.SlugField(
         'slug',
-        unique=True,
+        max_length=50,
+        unique=True
     )
+
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
         return self.name
@@ -98,6 +108,7 @@ class Genre(models.Model):
 class Title(models.Model):
     name = models.CharField(
         'название',
+        blank=False,
         max_length=200,
     )
     year = models.IntegerField(
@@ -111,6 +122,20 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         related_name='titles',
     )
+    genre = models.ManyToManyField(
+        Genre,
+        blank=True,
+        related_name='titles',
+    )
+    description = models.TextField(
+        'описание',
+        max_length=200,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
         return self.name
