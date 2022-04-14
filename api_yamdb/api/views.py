@@ -11,8 +11,9 @@ from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from http.client import OK, BAD_REQUEST
 from api.serializers import (SignUpSerializer, TokenSerializer, UserSerializer, 
-                            CategorySerializer, GenreSerializer, TitleSerializer)
+                            CategorySerializer, GenreSerializer, TitleCreateSerializer, TitleReadSerializer)
 from api.permissions import IsAdmin, IsAdminOrReadOnly
+from api.filters import TitleFilter
 from reviews.models import User, Category, Genre, Title
 
 
@@ -118,5 +119,14 @@ class GenreViewSet(ListCreateDestroyMixin):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+    serializer_class = TitleCreateSerializer
     permission_classes = [IsAdminOrReadOnly, ]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filterset_fields = ['genre__slug', 'category__slug']
+    filterset_class = TitleFilter
+    pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return TitleCreateSerializer
+        return TitleReadSerializer
