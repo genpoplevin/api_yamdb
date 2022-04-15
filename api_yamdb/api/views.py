@@ -5,13 +5,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from http.client import OK, BAD_REQUEST
-from api.serializers import (SignUpSerializer, TokenSerializer, UserSerializer, 
-                            CategorySerializer, GenreSerializer, TitleCreateSerializer, TitleReadSerializer)
+from api.serializers import (SignUpSerializer, TokenSerializer, UserSerializer,
+                             CategorySerializer, GenreSerializer,
+                             TitleCreateSerializer, TitleReadSerializer)
 from api.permissions import IsAdmin, IsAdminOrReadOnly
 from api.filters import TitleFilter
 from reviews.models import User, Category, Genre, Title

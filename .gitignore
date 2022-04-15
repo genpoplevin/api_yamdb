@@ -148,4 +148,6 @@ dmypy.json
 # папки со статикой и медиа
 media/
 
-.sqlite3
+.sqlite3.exe
+sqlite3.exe
+sqlite3

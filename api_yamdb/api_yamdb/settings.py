@@ -123,11 +123,11 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     # Устанавливаем срок жизни токена
-   'ACCESS_TOKEN_LIFETIME': timedelta(days=14),
-   'AUTH_HEADER_TYPES': ('Bearer',),
-} 
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=14),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
-#DEFAULT_FROM_EMAIL = 'admin@yamdb.com'
+# DEFAULT_FROM_EMAIL = 'admin@yamdb.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
