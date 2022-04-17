@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from reviews.models import User, Category, Genre, Title
 from rest_framework.validators import UniqueValidator
+from reviews.models import User, Category, Genre, Title, Review, Comment
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -83,7 +83,39 @@ class TitleReadSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True
     )
+    rating = serializers.IntegerField()
 
     class Meta:
         model = Title
         fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
+
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+
+    def create(self, validated_data):
+        title_id = self.context['view'].kwargs.get('title_id')
+        if Review.objects.filter(
+                title=title_id,
+                author=self.context['request'].user).exists():
+            raise serializers.ValidationError(
+                'Вы можете оставить только один отзыв к произведению')
+        return Review.objects.create(**validated_data)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'author', 'pub_date')
