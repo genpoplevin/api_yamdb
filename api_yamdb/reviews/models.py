@@ -137,54 +137,42 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    pub_date = models.DateTimeField('Дата добавления', auto_now_add=True)
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    text = models.TextField()
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
-    score = models.IntegerField(
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
-        ]
-    )
-    pub_date = models.DateTimeField(
-        auto_now_add=True,
-        blank=True
-    )
+    score = models.IntegerField(validators=[MinValueValidator(1),
+                                MaxValueValidator(10)])
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
-                name='title_author_unique_together'
-            )
+                name='unique_relationships'
+            ),
         ]
+
+    def __str__(self):
+        return self.text
 
 
 class Comment(models.Model):
-    review = models.ForeignKey(
-        Review,
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    text = models.TextField()
     author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
+        User, on_delete=models.CASCADE, related_name='comments')
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
     pub_date = models.DateTimeField(
-        auto_now_add=True,
-        blank=True
-    )
+        'Дата добавления', auto_now_add=True)
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ('id', )

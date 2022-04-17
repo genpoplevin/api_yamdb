@@ -1,23 +1,26 @@
+from http.client import BAD_REQUEST, OK
+
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django.core.mail import send_mail
-from rest_framework import viewsets, filters, permissions, mixins
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework_simplejwt.tokens import AccessToken
 from django_filters.rest_framework import DjangoFilterBackend
-from http.client import OK, BAD_REQUEST
-from api.serializers import (SignUpSerializer, TokenSerializer, UserSerializer,
-                             CategorySerializer, GenreSerializer,
-                             TitleCreateSerializer, TitleReadSerializer,
-                             ReviewSerializer, CommentSerializer)
-from api.permissions import (IsAdmin, IsAdminOrReadOnly,
-                             IsAuthorOrAdminOrModeratorOrReadOnly)
+from rest_framework import filters, mixins, permissions, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
+
 from api.filters import TitleFilter
-from reviews.models import User, Category, Genre, Title, Comment, Review
+from api.permissions import (IsAdmin, IsAuthorOrAdminOrModeratorOrReadOnly,
+                             IsAdminOrReadOnly)
+from api.serializers import (CategorySerializer, CommentSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             SignUpSerializer, TitleCreateSerializer,
+                             TitleReadSerializer, TokenSerializer,
+                             UserSerializer)
+from reviews.models import Category, Genre, Review, Title, User
 
 
 class HTTPMethod:
@@ -137,31 +140,28 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthorOrAdminOrModeratorOrReadOnly, ]
-    pagination_class = PageNumberPagination
+    permission_classes = (IsAuthorOrAdminOrModeratorOrReadOnly,)
 
     def get_queryset(self):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        title_id = self.kwargs.get("title_id")
+        title = get_object_or_404(Title, id=title_id)
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
         serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthorOrAdminOrModeratorOrReadOnly, ]
+    permission_classes = (IsAuthorOrAdminOrModeratorOrReadOnly,)
 
     def get_queryset(self):
-        id_review = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=id_review)
+        review_id = self.kwargs.get("review_id")
+        review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
 
     def perform_create(self, serializer):
-        id_review = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=id_review)
+        review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
         serializer.save(author=self.request.user, review=review)
