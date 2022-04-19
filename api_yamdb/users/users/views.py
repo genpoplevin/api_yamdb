@@ -13,7 +13,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from users.utils.permissions import IsAdmin
 from users.users.serializers import (SignUpSerializer, TokenSerializer,
-                                   UserSerializer)
+                                     UserSerializer)
 from users.models import User
 from users.utils.httpmethod import HTTPMethod
 
@@ -73,7 +73,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(request.user,
                                     data=request.data,
                                     partial=True)
-        if request.user.is_admin or request.user.is_moderator:
+        if request.user.role == 'admin' or request.user.role == 'moderator':
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=OK)

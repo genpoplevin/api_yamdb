@@ -5,7 +5,7 @@ from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
 
 from api.utils.filters import TitleFilter
-from api.utils.permissions import (IsAuthorOrAdminOrModeratorOrReadOnly,
+from api.utils.permissions import (IsAdminOrModeratorOrReadOnly,
                                    IsAdminOrReadOnly)
 from api.titles.serializers import (CategorySerializer, CommentSerializer,
                                     GenreSerializer, ReviewSerializer,
@@ -52,7 +52,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthorOrAdminOrModeratorOrReadOnly,)
+    permission_classes = [IsAdminOrModeratorOrReadOnly, ]
 
     def get_queryset(self):
         title_id = self.kwargs.get("title_id")
@@ -66,7 +66,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthorOrAdminOrModeratorOrReadOnly,)
+    permission_classes = [IsAdminOrModeratorOrReadOnly, ]
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")

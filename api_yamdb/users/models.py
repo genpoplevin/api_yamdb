@@ -43,16 +43,6 @@ class User(AbstractUser):
         default='user',
     )
 
-    @property
-    def is_admin(self):
-        if self.role == self.ADMIN or self.is_superuser:
-            return True
-
-    @property
-    def is_moderator(self):
-        if self.role == self.MODERATOR or self.is_superuser:
-            return True
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
