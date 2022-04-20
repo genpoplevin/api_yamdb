@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from reviews.models import Category, Genre, Title, Review, Comment
-
+from reviews.models import Category, Comment, Genre, Review, Title
+from django.db.models import Avg
 
 class CategorySerializer(serializers.ModelSerializer):
 
@@ -42,7 +42,9 @@ class TitleReadSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True
     )
-    rating = serializers.IntegerField()
+    rating = serializers.IntegerField(
+        read_only=True,
+    )
 
     class Meta:
         model = Title

@@ -11,10 +11,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from users.utils.permissions import IsAdmin
+from users.models import User
 from users.users.serializers import (SignUpSerializer, TokenSerializer,
                                      UserSerializer)
-from users.models import User
+from users.utils.permissions import IsAdmin
 from users.utils.httpmethod import HTTPMethod
 
 
@@ -67,7 +67,7 @@ class UserViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
     @action(detail=False,
-            methods=[HTTPMethod.GET, HTTPMethod.PATCH, ],
+            methods=[HTTPMethod.GET.value, HTTPMethod.PATCH.value, ],
             permission_classes=[IsAuthenticated, ])
     def me(self, request):
         serializer = UserSerializer(request.user,
